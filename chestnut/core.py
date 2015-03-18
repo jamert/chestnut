@@ -1,4 +1,5 @@
 from collections import namedtuple, defaultdict
+from chestnut.util import merge_tuples
 
 __all__ = ['Author', 'authors']
 
@@ -13,5 +14,6 @@ def authors(commit_data):
         commit_counter[(email, name)].add(hex)
     author_list = [Author(a[0], a[1], len(commits))
                    for a, commits in commit_counter.iteritems()]
-    author_list.sort(key=lambda a: a.commit_count, reverse=True)
-    return author_list
+    merged_author_list = merge_tuples(author_list, (0, 1), 2, Author)
+    merged_author_list.sort(key=lambda a: a.commit_count, reverse=True)
+    return merged_author_list
