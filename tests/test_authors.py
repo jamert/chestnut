@@ -22,6 +22,7 @@ def test_authors_repeating():
     assert authors(data) == [Author('j.doe@mail.com', 'John', 2)]
 
 
+# TODO: make separate tests for chestnut.util.merge_tuples
 def test_authors_automerge_identities():
     data = [('f644aa1ac062df528bf27b3d9f444960da7d8245',
              'j.doe@mail.com', 'John'),
