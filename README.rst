@@ -10,7 +10,7 @@ Usage:
 Given repository location you can get main contributors as::
 
   >>> import chestnut
-  >>> repo = chestnut.repo('./r2d2.git')
+  >>> repo = chestnut.Repository('./r2d2.git')
   >>> print repo.authors()
   [{'name': 'John Doe',
     'email': 'j.doe@mail.com',
