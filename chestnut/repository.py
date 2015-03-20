@@ -1,4 +1,5 @@
 import pygit2
+from .core import authors
 
 
 class Repository(object):
@@ -22,3 +23,11 @@ class Repository(object):
                     commit.author.email,
                     commit.author.name,
                 ))
+
+    @staticmethod
+    def _named2dict(named):
+        return {field: named[i] for i, field in enumerate(named._fields)}
+
+    def authors(self):
+        return map(self._named2dict, authors(self.commit_data))
+

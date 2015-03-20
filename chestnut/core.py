@@ -15,5 +15,13 @@ def authors(commit_data):
     author_list = [Author(a[0], a[1], len(commits))
                    for a, commits in commit_counter.iteritems()]
     merged_author_list = merge_tuples(author_list, (0, 1), 2, Author)
-    merged_author_list.sort(key=lambda a: a.commit_count, reverse=True)
+    merged_author_list.sort(cmp=_cmp_authors)
     return merged_author_list
+
+
+def _cmp_authors(x, y):
+    cc_cmp = cmp(x.commit_count, y.commit_count)
+    if cc_cmp != 0:
+        return -cc_cmp
+    else:
+        return cmp(x.name, y.name)

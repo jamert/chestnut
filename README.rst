@@ -12,5 +12,9 @@ Given repository location you can get main contributors as::
   >>> import chestnut
   >>> repo = chestnut.repo('./r2d2.git')
   >>> print repo.authors()
-  {'John Doe': 96,
-   'Mary Dowell': 35}
+  [{'name': 'John Doe',
+    'email': 'j.doe@mail.com',
+    'commit_count': 96},
+   {'name': 'Mary Dowell',
+    'email': 'm.dowell@mail.com',
+    'commit_count': 35}]

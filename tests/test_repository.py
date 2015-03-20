@@ -1,8 +1,9 @@
 from chestnut.repository import Repository
 
+repo = Repository('tests/data/testrepo.git')
+
 
 def test_repository_commit_data():
-    repo = Repository('tests/data/testrepo.git')
     data = set((
         ('8bed03360e9227ab20cf2a086a8a14ee2a30b7fd',
          'dayneko.ab@gmail.com', 'Artem Dayneko'),
@@ -24,3 +25,25 @@ def test_repository_commit_data():
          'Nico.Geyso@FU-Berlin.de', 'Nico von Geyso'),
     ))
     assert set(repo.commit_data) == data
+
+
+def test_repository_authors():
+    data = [
+        {'email': 'dayneko.ab@gmail.com',
+         'name': 'Artem Dayneko',
+         'commit_count': 2},
+        {'email': 'dborowitz@google.com',
+         'name': 'Dave Borowitz',
+         'commit_count': 2},
+        {'email': 'Nico.Geyso@FU-Berlin.de',
+         'name': 'Nico von Geyso',
+         'commit_count': 2},
+        {'email': 'xavier.delannoy@gmail.com',
+         'name': 'delanne',
+         'commit_count': 2},
+        {'email': 'p.hosek@imperial.ac.uk',
+         'name': 'Petr Hosek',
+         'commit_count': 1},
+    ]
+    assert repo.authors() == data
+
