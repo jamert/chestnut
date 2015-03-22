@@ -18,3 +18,11 @@ Given repository location you can get main contributors as::
    {'name': 'Mary Dowell',
     'email': 'm.dowell@mail.com',
     'commit_count': 35}]
+  >>> print repo.histogram(author='John Doe',
+                           by='quarter')
+  {'fields': ['start', 'end', 'commits'],
+   'data': [
+     [1420070400, 1427846400, 43],
+     [1427846400, 1435708800, 34],
+     [1435708800, 1443657600, 19]
+   ]}
