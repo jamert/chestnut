@@ -37,7 +37,7 @@ def merge_tuples(tuples, merge_indexes, count_index, cls):
     # finally merge
     merged = set()
     for merger_item in final_merge_list:
-        merged_item = list(merger_item)
+        merged_item = list(list(merger_item)[0])
         for index in merge_indexes:
             counter = defaultdict(lambda: 0)
             for t in merger_item:
