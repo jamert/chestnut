@@ -2,10 +2,13 @@ from collections import namedtuple, defaultdict
 import arrow
 from chestnut.util import merge_tuples
 
-__all__ = ['Author', 'authors']
+__all__ = ['Author', 'authors',
+           'histogram', 'YEAR', 'QUARTER', 'MONTH']
 
 
 Author = namedtuple('Author', ('email', 'name', 'commit_count'))
+
+# TODO: exclude merge commits
 
 
 def authors(commit_data):
@@ -29,33 +32,81 @@ def _cmp_authors(x, y):
         return cmp(x.name, y.name)
 
 
-def histogram(commit_data, author=None, by='quarter'):
-    def trim_timestamp(ts):
+class BucketDivisor(object):
+    @staticmethod
+    def trim(ts):
+        raise NotImplementedError
+
+    @staticmethod
+    def _next(date):
+        raise NotImplementedError
+
+    @classmethod
+    def fill(cls, buckets):
+        min_date = arrow.get(min(buckets.keys()))
+        max_date = cls._next(arrow.get(max(buckets.keys())))
+
+        dates = []
+        date = min_date
+        while date <= max_date:
+            dates.append(date.timestamp)
+            date = cls._next(date)
+
+        return dates
+
+
+class YearDivisor(BucketDivisor):
+    @staticmethod
+    def trim(ts):
         date = arrow.get(ts)
-        print date
-        trimmed_month = date.month - (date.month - 1) % 3
-        new_date = date.replace(month=trimmed_month, day=1).floor('day')
-        print new_date
+        new_date = date.floor('year')
         return new_date.timestamp
 
-    def next_date(date):
+    @staticmethod
+    def _next(date):
+        return date.replace(years=+1)
+
+
+class QuarterDivisor(BucketDivisor):
+    @staticmethod
+    def trim(ts):
+        date = arrow.get(ts)
+        trimmed_month = date.month - (date.month - 1) % 3
+        new_date = date.replace(month=trimmed_month, day=1).floor('day')
+        return new_date.timestamp
+
+    @staticmethod
+    def _next(date):
         return date.replace(months=+3)
 
+
+class MonthDivisor(BucketDivisor):
+    @staticmethod
+    def trim(ts):
+        date = arrow.get(ts)
+        new_date = date.floor('month')
+        return new_date.timestamp
+
+    @staticmethod
+    def _next(date):
+        return date.replace(months=+1)
+
+
+YEAR = YearDivisor
+QUARTER = QuarterDivisor
+MONTH = MonthDivisor
+
+
+def histogram(commit_data, author=None, by=QUARTER):
     def is_author(author, email, name):
         return True
 
     buckets = defaultdict(set)
     for hex, email, name, ts in commit_data:
         if is_author(author, email, name):
-            buckets[trim_timestamp(ts)].add(hex)
+            buckets[by.trim(ts)].add(hex)
 
-    min_date = arrow.get(min(buckets.keys()))
-    max_date = arrow.get(max(buckets.keys())).replace(months=+3)
-    dates = []
-    date = min_date
-    while date <= max_date:
-        dates.append(date.timestamp)
-        date = next_date(date)
+    dates = by.fill(buckets)
 
     histogram = []
     for start, end in zip(dates[:-1], dates[1:]):
