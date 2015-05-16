@@ -24,6 +24,7 @@ setup(
     # platforms='any',
     install_requires=[
         'pygit2==0.22.0',
+        'arrow==0.5.4'
     ],
     classifiers=[
         'Development Status :: 1 - Planning',
