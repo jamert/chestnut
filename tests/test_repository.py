@@ -24,7 +24,7 @@ def test_repository_commit_data():
         ('f5e5aa4e36ab0fe62ee1ccc6eb8f79b866863b87',
          'Nico.Geyso@FU-Berlin.de', 'Nico von Geyso'),
     ))
-    assert set(repo.commit_data) == data
+    assert set(map(lambda cd: cd[:3], repo.commit_data)) == data
 
 
 def test_repository_authors():
@@ -47,3 +47,6 @@ def test_repository_authors():
     ]
     assert repo.authors() == data
 
+
+def test_repository_histogram():
+    assert repo.histogram()

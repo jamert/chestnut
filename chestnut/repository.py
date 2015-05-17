@@ -1,5 +1,7 @@
 import pygit2
-from .core import authors
+from .core import authors, \
+    histogram as core_histogram, \
+    YEAR, QUARTER, MONTH
 
 
 class Repository(object):
@@ -22,6 +24,7 @@ class Repository(object):
                     commit.hex,
                     commit.author.email,
                     commit.author.name,
+                    commit.author.time
                 ))
 
     @staticmethod
@@ -29,5 +32,19 @@ class Repository(object):
         return {field: named[i] for i, field in enumerate(named._fields)}
 
     def authors(self):
-        return map(self._named2dict, authors(self.commit_data))
+        return map(self._named2dict,
+                   authors(map(lambda cd: cd[:3],
+                               self.commit_data)))
 
+    def histogram(self, author=None, by='quarter'):
+        divisors = {'year': YEAR,
+                    'month': MONTH,
+                    'quarter': QUARTER}
+        divisor = divisors.get(by)
+        if divisor is None:
+            raise ValueError("Wrong 'by' argument ({}), should be one of {}",
+                             by, list(divisors.keys()))
+        return {
+            'fields': ['start', 'end', 'commits'],
+            'data': core_histogram(self.commit_data, author, divisor)
+        }
